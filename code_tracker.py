@@ -32,15 +32,13 @@ def start():
     now=datetime.now()
     global start_time
 
-    #ensures that the start time is not overwriten when the timer is paused
+    #record start time for session
     global session
     if not session:
         start_time = datetime(now.year,now.month,now.day,now.hour,now.minute).isoformat()
         session = True
 
-    print("start: " + start_time)
-    print("end: " + end_time)
-
+    #ensures that the start time is not overwriten when the timer is paused
     global running
     if not running:
         update()
@@ -57,12 +55,11 @@ def stop():
 
 #logs timer session to google calendar
 def log():
+
+    #gets the time at the end of the session when the user presses 'log'
     now=datetime.now()
     global end_time
     end_time = datetime(now.year,now.month,now.day,now.hour,now.minute).isoformat()
-
-    print("start: " + start_time)
-    print("end: " + end_time)
 
     global running
     if running:
@@ -81,22 +78,22 @@ def log():
     newWindow = Toplevel(root)
     newWindow.title("Add Notes")
     newWindow.geometry("400x200")
-    l = Label(newWindow,text="Add a note for your study session:",font=('System', 10))
-    T = Text(newWindow, height=5, width=60)
+    notes_lable = Label(newWindow,text="Add a note for your study session:",font=('System', 10))
+    notes_textbox = Text(newWindow, height=5, width=60)
 
     INPUT = ''
-    def print_input():
-        INPUT = T.get("1.0", "end-1c")
-
+    def get_text():
+        #gets input in textbox
+        INPUT = notes_textbox.get("1.0", "end-1c")
         create_event(start_time, end_time, INPUT)
-
         newWindow.quit()
 
-    b = tk.Button(newWindow,text="Submit",height=5,width=10,font=('System', 30),command=lambda:print_input())
+    #calls get_text when user presses to submit button to record note and call create_event
+    notes_submit = tk.Button(newWindow,text="Submit",height=5,width=10,font=('System', 30),command=lambda:get_text())
 
-    l.pack()
-    T.pack()
-    b.pack()
+    notes_lable.pack()
+    notes_textbox.pack()
+    notes_submit.pack()
     
 
 
@@ -122,6 +119,8 @@ def update():
     update_time = stopwatch_label.after(1000, update)
 
 
+
+#creates the event to the calendar using a start and end time, and notes value
 def create_event(start, end, notes):
 
     creds = None
@@ -174,7 +173,7 @@ def create_event(start, end, notes):
 # create main window
 root = tk.Tk()
 root.geometry('490x210')
-root.title('Stopwatch')
+root.title('Coding Productivity Tracker')
 
 # label to display time
 stopwatch_label = tk.Label(text='00:00:00', font=('Terminal', 80))
@@ -185,8 +184,8 @@ start_button = tk.Button(text='start', height=5, width=7, font=('System', 20), c
 start_button.pack(side=tk.LEFT)
 pause_button = tk.Button(text='stop', height=5, width=7, font=('System', 20), command=stop)
 pause_button.pack(side=tk.LEFT)
-reset_button = tk.Button(text='log', height=5, width=7, font=('System', 20), command=log)
-reset_button.pack(side=tk.LEFT)
+log_button = tk.Button(text='log', height=5, width=7, font=('System', 20), command=log)
+log_button.pack(side=tk.LEFT)
 quit_button = tk.Button(text='quit', height=5, width=7, font=('System', 20), command=root.quit)
 quit_button.pack(side=tk.LEFT)
 
